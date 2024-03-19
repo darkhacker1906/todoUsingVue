@@ -1,10 +1,9 @@
 <template>
   <div class="table_div">
     <table id="todo-table">
-      
       <thead>
         <tr>
-          <th class="header-cell">Text</th>
+          <th class="header-cell detail">Details</th>
           <th class="header-cell">Actions</th> 
         </tr>
       </thead>
@@ -12,7 +11,7 @@
         <tr v-for="(todo, index) in data" :key="index">
           <td class="text_show">
             <div v-if="todo.editing" class="map_text">
-              <input type="text" v-model="todo.editedText" @keyup.enter="saveEdit(todo)" />
+              <input type="text" v-model="todo.editedText" @keyup.enter="saveEdit(todo)" class="edit_text" />
             </div>
             <div v-else class="map_text">
               <span><input type="checkbox" class="check" v-model="todo.completed" @change="updateLocalStorage" /></span>
@@ -22,11 +21,15 @@
           <td class="checkedd">
             <div>
               <button v-if="todo.editing" @click="saveEdit(todo)" class="open">Save</button>
-              <button v-else @click="toggleEdit(todo)" class="open"><i class="fas fa-edit icon"></i></button>
-              <button @click="deleteRow(index)" class="open"><i class="fas fa-trash-alt icon"></i></button>
+              <!-- <button v-else @click="toggleEdit(todo)" class="open"> -->
+                <i class="fas fa-edit icon" v-else @click="toggleEdit(todo)"></i>
+                <!-- </button> -->
+              <!-- <button @click="deleteRow(index)" class="open"><i class="fas fa-trash-alt icon"></i></button> -->
+              <button v-if="todo.editing" @click="cancel(todo)">Cancel</button>
+              <i @click="deleteRow(index)" v-else class="fas fa-trash-alt icon"></i>
             </div>
             <div>
-              <span v-if="todo.completed">Completed</span>
+              <span v-if="todo.completed" class="complete">Completed</span>
               <span class="hid" v-else>Incomplete</span>
             </div>
           </td>
@@ -54,6 +57,7 @@ export default {
       }
       this.updateLocalStorage();
     },
+
     saveEdit(todo) {
       if (todo.editedText.trim() !== "") {
         todo.editing = false;
@@ -64,9 +68,15 @@ export default {
       }
       this.updateLocalStorage();
     },
+
+    cancel(todo){
+      todo.editing=false;
+    },
+
     deleteRow(index) {
       this.$emit("delete", index);
     },
+
     updateLocalStorage() {
       localStorage.setItem('todos', JSON.stringify(this.data));
     }
@@ -76,10 +86,15 @@ export default {
 
 <style>
 .table_div{
-  height: 400px;
+  height: 300px;
   overflow-y: auto;
-  width: 60%;
+
+  width: 90%;
   margin: auto;
+  background: white;
+  padding: 20px;
+  border: transparent;
+      border-radius: 13px;
 }
 .table_div::-webkit-scrollbar {
   width: 10px;
@@ -97,28 +112,35 @@ export default {
 }
 
 #todo-table tr:nth-child(even) {
-     background:#e2cff9;
+     /* background:#e7dcf4; */
+     background: #eae4d9;
 }
 
 #todo-table tr:hover {
   /* background-color: #ddd; */
-  background:#dcc5f8;
+ /* background:#dcc5f8;*/
 }
 
 .header-cell {
   text-align: center;
 }
+.detail{
+  text-align: left;
+  padding-left: 40px;
+}
 
 #todo-table th {
   padding-top: 12px;
   padding-bottom: 12px;
-  width: 50%;
-  /* background-color: #a4a7a6; */
-  background: #AF7EEB;
+  width: 60%;
+
+  background: #ab8a4e;
   color: white;
 }
 button{
   margin-right: 5px;
+  font-size: 16px;
+  font-weight: bold;
 }
 .map_text{
   width: 100%;
@@ -150,5 +172,16 @@ button{
 }
 .hid{
   visibility: hidden;
+}
+i{
+  margin-right: 10px;
+}
+.edit_text{
+  height: 24px;
+    width: 70%;
+    padding:0px 10px;
+}
+.complete{
+  font-size: 13px;
 }
 </style>
